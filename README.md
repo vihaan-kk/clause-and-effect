@@ -1,53 +1,112 @@
-# Chrome Extension Template
+# Clause & Effect
 
-A blank Chrome extension template to get started quickly.
+**AI-powered Chrome Extension for Legal Document Analysis**
+
+Hack_NCState2026 Project by Vihaan, Aadhya, and Vedant.
+
+## Overview
+
+Clause & Effect is a Chrome extension that uses Google's Gemini AI to analyze legal documents directly in your browser. Navigate to any legal document (terms of service, privacy policy, contract, etc.) and get instant AI-powered analysis highlighting key clauses, risk assessments, and concerning terms.
+
+## Features
+
+- 🔍 **One-click Analysis**: Analyze any legal document on any webpage
+- 🤖 **AI-Powered**: Uses Google Gemini Pro for intelligent document analysis
+- ⚠️ **Risk Assessment**: Automatically identifies risk levels (Low/Medium/High)
+- 📋 **Key Clauses**: Extracts and highlights the most important clauses
+- 🎯 **Concerning Terms**: Flags potentially unfavorable or risky terms
+- 📊 **Document Summaries**: Provides clear, concise summaries of legal documents
 
 ## File Structure
 
 ```
-├── manifest.json       # Extension configuration
-├── background.js       # Background service worker
-├── content.js          # Content script (runs on web pages)
-├── content.css         # Styles for content script
-├── popup.html          # Extension popup UI
-└── popup.js            # Popup logic
+├── manifest.json           # Extension configuration
+├── background.js           # Background service worker
+├── content.js              # Content script (runs on web pages, extracts text)
+├── content.css             # Styles for content script
+├── popup.html              # Extension popup UI
+├── popup.js                # Popup logic and analysis orchestration
+├── api/
+│   └── gemini.js          # Gemini API integration (contains API key)
+├── prompts/
+│   └── legal-analysis.txt # Legal analysis prompt template
+└── utils/
+    ├── extractor.js       # Text extraction utilities
+    ├── prompts.js         # Prompt loader (loads .txt files)
+    └── analyzer.js        # Legal document analysis logic
 ```
+
+## How It Works
+
+1. **Text Extraction** (`content.js`): Extracts clean text from the current webpage
+2. **Analysis Request** (`popup.js`): User clicks "Analyze Current Page" button
+3. **Prompt Loading** (`utils/prompts.js`): Loads prompt template from `prompts/legal-analysis.txt`
+4. **Prompt Generation**: Replaces `{{LEGAL_TEXT}}` placeholder with actual extracted text
+5. **AI Analysis** (`utils/analyzer.js`): Sends complete prompt to Gemini AI via API
+6. **Results Display** (`popup.html`): Shows formatted analysis results in the popup
+
+## Customizing Prompts
+
+Prompts are stored as plain text files in the `prompts/` directory:
+
+- **Edit existing prompts**: Open `prompts/legal-analysis.txt` and modify the prompt text
+- **Use placeholders**: Use `{{LEGAL_TEXT}}` where you want the extracted text inserted
+- **Add new prompts**: Create new `.txt` files in `prompts/` directory and load them using `loadPromptTemplate('your-prompt-name')`
+
+No need to edit JavaScript code - just modify the text files and reload the extension!
 
 ## Setup
 
-1. Open Chrome and go to `chrome://extensions/`
-2. Enable "Developer mode" (toggle in top right)
-3. Click "Load unpacked"
-4. Select this folder
+1. Clone this repository
+2. Add your Gemini API key to `.env` file (already configured)
+3. Open Chrome and go to `chrome://extensions/`
+4. Enable "Developer mode" (toggle in top right)
+5. Click "Load unpacked"
+6. Select this folder
 
 Your extension is now loaded!
 
 ## Usage
 
-- Click the extension icon to open the popup
-- The content script runs on all web pages
-- The background service worker handles events
+1. Navigate to any legal document webpage (e.g., terms of service, privacy policy)
+2. Click the Clause & Effect extension icon in your Chrome toolbar
+3. Click "Analyze Current Page"
+4. Wait a few seconds while AI analyzes the document
+5. Review the analysis results including:
+   - Document type identification
+   - Key clauses
+   - Risk assessment
+   - Concerning terms
+   - Summary
 
-## Next Steps
+## Development
 
-1. Customize `manifest.json` with your extension name and description
-2. Build your UI in `popup.html`
-3. Add your logic in `background.js` and `content.js`
-4. Style your extension with `content.css`
+### API Key Configuration
+
+The Gemini API key is stored in:
+
+- `.env` file (for reference)
+- Hardcoded in `utils/analyzer.js` (Chrome extensions can't read .env files directly)
+
+**Security Note**: For production, implement proper API key management. Current setup is for hackathon/demo purposes.
+
+### Architecture
+
+- **Content Script**: Runs on all web pages to extract text when requested
+- **Popup**: User interface for triggering analysis and viewing results
+- **Background Worker**: Minimal event handling (can be extended for future features)
+- **Analyzer**: Contains the AI analysis logic using Gemini API
 
 ## Resources
 
 - [Chrome Extension Documentation](https://developer.chrome.com/docs/extensions/mv3/)
+- [Gemini API Documentation](https://ai.google.dev/docs)
 - [Manifest V3 Guide](https://developer.chrome.com/docs/extensions/mv3/intro/)
 
 ---
 
 **Team:** Vihaan, Aadhya, Vedant  
 **Event:** Hack_NCState2026
-
-**AI-powered Chrome Extension for Legal Document Analysis**
-
-Hack_NCState2026 Project by Vihaan, Aadhya, and Vedant.
 
 ## Overview
 

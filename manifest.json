@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "My Extension",
+  "name": "Clause & Effect",
   "version": "1.0.0",
-  "description": "A blank Chrome extension template",
+  "description": "AI-powered legal document analyzer for Chrome",
   "permissions": [
     "activeTab",
     "storage"
@@ -19,5 +19,11 @@
   ],
   "action": {
     "default_popup": "popup.html"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["prompts/*.txt"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
