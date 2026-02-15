@@ -15,7 +15,7 @@ async function saveScan(analysisData) {
   history.push({
     timestamp: Date.now(),
     riskScore: analysisData.riskScore,
-    documentType: analysisData.documentType,
+    documentType: analysisData.companyDocumentType || analysisData.documentType,
     riskLevel: analysisData.riskLevel
   });
   
@@ -26,14 +26,6 @@ async function saveScan(analysisData) {
   
   await chrome.storage.local.set({ scanHistory: history });
   updateScanCount();
-}
-
-async function getAverageRiskScore() {
-  const history = await getScanHistory();
-  if (history.length === 0) return 0;
-  
-  const sum = history.reduce((acc, scan) => acc + (scan.riskScore || 0), 0);
-  return Math.round(sum / history.length);
 }
 
 function updateScanCount() {
@@ -53,9 +45,9 @@ function displayAnalysis(analysisData) {
   const riskDisplay = document.getElementById('risk-display');
   riskDisplay.style.display = 'block';
   
-  // Update document type
+  // Update document type (use companyDocumentType as title)
   document.getElementById('document-type').textContent = 
-    (analysisData.documentType || 'UNKNOWN').toUpperCase();
+    (analysisData.companyDocumentType || analysisData.documentType || 'UNKNOWN').toUpperCase();
   
   // Update current risk score
   document.getElementById('current-risk').textContent = analysisData.riskScore || 0;
@@ -72,11 +64,6 @@ function displayAnalysis(analysisData) {
   } else {
     riskLevelElement.style.color = '#B8860B';
   }
-  
-  // Update average risk score
-  getAverageRiskScore().then(avg => {
-    document.getElementById('average-risk').textContent = avg;
-  });
   
   // Display felony warning (most critical red flag)
   if (analysisData.redFlags && analysisData.redFlags.length > 0) {
@@ -260,6 +247,97 @@ function hideLoading() {
   document.getElementById('analyze-btn').disabled = false;
 }
 
+// PDF handling
+async function extractTextFromPDF(file) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      
+      // Check if PDF.js is loaded
+      if (typeof pdfjsLib === 'undefined') {
+        reject(new Error('PDF.js library not loaded. Please refresh the extension and try again.'));
+        return;
+      }
+      
+      // Load the PDF
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      console.log('PDF loaded, pages:', pdf.numPages);
+      
+      let fullText = '';
+      
+      // Extract text from each page
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map(item => item.str).join(' ');
+        fullText += pageText + '\n\n';
+      }
+      
+      resolve(fullText);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+async function handlePDFUpload(file) {
+  if (!file || file.type !== 'application/pdf') {
+    showError('Please select a valid PDF file');
+    return;
+  }
+  
+  console.log('Processing PDF:', file.name);
+  document.getElementById('pdf-filename').textContent = `Selected: ${file.name}`;
+  
+  // Show loading
+  document.getElementById('initial-state').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  
+  try {
+    // Extract text from PDF
+    const extractedText = await extractTextFromPDF(file);
+    
+    if (!extractedText || extractedText.trim().length === 0) {
+      hideLoading();
+      showError('No text found in PDF. The PDF might be image-based or empty.');
+      return;
+    }
+    
+    console.log('Text extracted from PDF:', extractedText.length, 'characters');
+    
+    // Analyze the extracted text
+    const analysisResult = await analyzeLegalDocument(extractedText);
+    
+    hideLoading();
+    
+    if (analysisResult.success) {
+      // Parse JSON response
+      let analysisData;
+      try {
+        analysisData = JSON.parse(analysisResult.analysis);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        showError('Failed to parse analysis results. The AI response was not in the expected format.');
+        return;
+      }
+      
+      // Save to history
+      await saveScan(analysisData);
+      
+      // Display results
+      displayAnalysis(analysisData);
+      
+      console.log('PDF analysis complete!');
+    } else {
+      showError(`Analysis failed: ${analysisResult.error}`);
+    }
+  } catch (error) {
+    hideLoading();
+    console.error('PDF processing error:', error);
+    showError(`Error processing PDF: ${error.message}`);
+  }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Popup loaded');
@@ -267,11 +345,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Update scan count on load
   updateScanCount();
   
+  // Initialize PDF.js worker when available
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = chrome.runtime.getURL('lib/pdf.worker.min.js');
+    console.log('PDF.js initialized');
+  }
+  
   // Analyze button
   document.getElementById('analyze-btn').addEventListener('click', performAnalysis);
+  
+  // PDF upload
+  document.getElementById('pdf-upload').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handlePDFUpload(file);
+    }
+  });
   
   // Analyze another button
   document.getElementById('analyze-another-btn').addEventListener('click', () => {
     resetUI();
+    // Reset file input
+    document.getElementById('pdf-upload').value = '';
+    document.getElementById('pdf-filename').textContent = '';
   });
 });

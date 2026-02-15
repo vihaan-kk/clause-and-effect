@@ -1,7 +1,7 @@
 // Gemini API Integration
 // API key from .env file
 
-const GEMINI_API_KEY = 'AIzaSyB0wwEQQaSSM45z0egA4JgZQ5rPNiJHRKc';
+const GEMINI_API_KEY = "AIzaSyCcTTk2575SfK62HHz5ATC70CEKSJa9tH4";
 const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent';
 
 /**
@@ -15,7 +15,10 @@ async function callGeminiAPI(prompt) {
   }
 
   try {
-    console.log('Calling Gemini API...');
+    console.log('=== GEMINI API DEBUG ===');
+    console.log('📤 PROMPT BEING SENT:');
+    console.log(prompt);
+    console.log('========================');
     
     const response = await fetch(`${GEMINI_API_ENDPOINT}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
@@ -29,9 +32,9 @@ async function callGeminiAPI(prompt) {
           }]
         }],
         generationConfig: {
-          temperature: 1.0,
-          topK: 40,
-          topP: 0.95,
+          temperature: 0.3,
+          topK: 20,
+          topP: 0.85,
           maxOutputTokens: 8192,
         },
         safetySettings: [
@@ -57,6 +60,10 @@ async function callGeminiAPI(prompt) {
     const analysisText = data.candidates[0].content.parts[0].text;
 
     console.log('Gemini API call successful');
+    console.log('=== GEMINI API DEBUG ===');
+    console.log('📥 RESPONSE RECEIVED:');
+    console.log(analysisText);
+    console.log('========================');
 
     return {
       success: true,
