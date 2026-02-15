@@ -1,11 +1,6 @@
 // Gemini API Integration
 // API key loaded from config.js
 
-// Check if config.js is loaded and API key is available
-if (typeof CONFIG === 'undefined' || !CONFIG.GEMINI_API_KEY) {
-  console.error('❌ CONFIG not loaded or API key missing. Make sure config.js is loaded before this script.');
-}
-
 const GEMINI_API_KEY = typeof CONFIG !== 'undefined' ? CONFIG.GEMINI_API_KEY : '';
 const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent';
 

@@ -1,7 +1,5 @@
-// import { extractPageText, extractPageData } from './utils/extractor.js';
-
 // Content script - runs on web pages
-  console.log('Extension content script loaded');
+console.log('Extension content script loaded');
 
 // Function to extract page text
 function extractPageText() {
@@ -19,13 +17,7 @@ function extractPageText() {
   return text.trim().replace(/\s+/g, ' ');
 }
 
-// Function to extract selected text or page data
-function extractPageData() {
-  const selection = window.getSelection();
-  return selection ? selection.toString() : '';
-}
-
-// Listen for messages from background script
+// Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Content script received:', request);
     
@@ -36,10 +28,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log('Text preview:', data.substring(0, 100));
         sendResponse({ success: true, text: data });
     }
-    else if (request.action === 'extractData') {
-        const selectedText = extractPageData();
-        sendResponse({ success: true, selectedText });
-    }
     
-      return true; // Keep message channel open for async responses
-  });
+    return true; // Keep message channel open for async responses
+});

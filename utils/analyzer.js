@@ -61,13 +61,3 @@ async function analyzeLegalDocument(extractedText) {
     };
   }
 }
-
-/**
- * Extract risk level from analysis text
- * @param {string} analysisText - The analysis result
- * @returns {string} Risk level (Low, Medium, High, or Unknown)
- */
-function extractRiskLevel(analysisText) {
-  const riskMatch = analysisText.match(/risk level:?\s*(low|medium|high)/i);
-  return riskMatch ? riskMatch[1].charAt(0).toUpperCase() + riskMatch[1].slice(1).toLowerCase() : 'Unknown';
-}
