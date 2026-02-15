@@ -142,6 +142,8 @@ The Clause & Effect icon will appear in your browser toolbar. Click it to open t
 
 ## Risk Score Guide
 
+**Lower is better.** A score of 0 means the document is very consumer-friendly; a score of 100 means it contains predatory or dangerous terms.
+
 | Score  | Level    | Color  | Meaning                         |
 | ------ | -------- | ------ | ------------------------------- |
 | 0–20   | Minimal  | Green  | Very consumer-friendly          |
