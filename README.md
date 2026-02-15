@@ -1,9 +1,10 @@
 # Clause & Effect
-Theme: Urban Noir
-Track: Siren's Call
-Challenge: Gemini API Integration
 
 **AI-powered Chrome Extension for Legal Document Analysis**
+
+**Theme: Urban Noir**
+**Track: Siren's Call**
+**Challenge: Gemini API Integration**
 
 Hack_NCState2026 Project by Vihaan Kerekatte, Aadhya Mittapalli, and Vedant Chaudhari
 
