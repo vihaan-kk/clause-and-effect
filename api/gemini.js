@@ -1,7 +1,12 @@
 // Gemini API Integration
-// API key from .env file
+// API key loaded from config.js
 
-const GEMINI_API_KEY = "AIzaSyCcTTk2575SfK62HHz5ATC70CEKSJa9tH4";
+// Check if config.js is loaded and API key is available
+if (typeof CONFIG === 'undefined' || !CONFIG.GEMINI_API_KEY) {
+  console.error('❌ CONFIG not loaded or API key missing. Make sure config.js is loaded before this script.');
+}
+
+const GEMINI_API_KEY = typeof CONFIG !== 'undefined' ? CONFIG.GEMINI_API_KEY : '';
 const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent';
 
 /**
@@ -10,6 +15,10 @@ const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/mo
  * @returns {Promise<Object>} Result with success status and response text or error
  */
 async function callGeminiAPI(prompt) {
+  if (!GEMINI_API_KEY) {
+    throw new Error('Gemini API key not configured. Please ensure config.js exists with your API key.');
+  }
+  
   if (!prompt || prompt.trim().length === 0) {
     throw new Error('Prompt is required');
   }
