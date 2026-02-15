@@ -1,296 +1,199 @@
 # Clause & Effect
+Theme: Urban Noir
+Track: Siren's Call
+Challenge: Gemini API Integration
 
 **AI-powered Chrome Extension for Legal Document Analysis**
 
-Hack_NCState2026 Project by Vihaan, Aadhya, and Vedant
+Hack_NCState2026 Project by Vihaan Kerekatte, Aadhya Mittapalli, and Vedant Chaudhari
 
 ---
 
 ## Overview
 
-Clause & Effect is a Chrome extension that translates complex legal documents (Terms of Service, contracts, privacy policies) into plain English with AI-powered risk analysis, flag detection, and negotiation advice.
+Clause & Effect is a Chrome extension that analyzes legal documents — Terms of Service, privacy policies, contracts, and agreements — directly from live web pages or uploaded PDFs using Google's Gemini AI. It assigns a 0–100 risk score, flags concerning clauses by severity (red / yellow / green), provides a plain-English summary, and offers negotiation advice.
 
-**Current Status:** 🚧 **Foundation Complete - Core Features In Development**
-
-- ✅ Chrome extension framework configured
-- ✅ Settings popup UI designed and styled
-- ✅ API keys configured
-- ✅ Technical specifications documented
-- 🚧 API integration in progress
-- 🚧 Text extraction needs implementation
-- 🚧 Analysis panel UI needs implementation
-
-Never unknowingly sign away your rights again!
+Never unknowingly sign away your rights again.
 
 ---
 
-## Features (Planned)
+## Features
 
-- 🎯 **Risk Score Analysis** - 0-100 risk rating for any legal document
-- 🚨 **Red Flag Detection** - Identifies critical issues like data selling, forced arbitration, IP rights transfer
-- ⚠️ **Yellow Flag Warnings** - Highlights concerning but negotiable clauses
-- 💡 **Negotiation Advice** - Get specific recommendations on what to push back on
-- 🔍 **Plain English Summaries** - Understand what you're actually agreeing to
-- 💾 **Memory Layer** - Remember past analyses with Backboard.io integration
+- **Risk Score (0–100)** — Calculated with a detailed rubric: critical issues (+15–20 pts), high-risk clauses (+10–14 pts), moderate concerns (+5–9 pts), minor issues (+1–4 pts)
+- **Red / Yellow / Green Flags** — Each clause is categorized by severity with a short explanation
+- **Plain English Summary** — 3 sentence overview of what the document actually says (legalese translation)
+- **Negotiation Advice** — Actionable recommendations on what to push back on
+- **PDF Upload** — Analyze any PDF document directly from the extension popup
+- **Scan History** — Tracks your last 100 analyses using Chrome local storage
 
 ---
 
 ## Tech Stack
 
-- **Chrome Extension** (Manifest V3)
-- **Google Gemini API** - AI-powered legal analysis (free tier: 1500 req/day)
-- **Backboard.io API** - Memory layer and RAG for legal clause database
-- **Vanilla JavaScript** - No frameworks for maximum performance
+| Layer       | Technology                                  |
+| ----------- | ------------------------------------------- |
+| Platform    | Chrome Extension (Manifest V3)              |
+| AI Model    | Google Gemini API(`gemini-3-flash-preview`) |
+| PDF Parsing | PDF.js 3.11.174 (bundled locally)           |
+| Storage     | `chrome.storage.local`                      |
+| Language    | Vanilla JavaScript, HTML — no frameworks    |
 
 ---
 
-## Current Project Structure
+## Project Structure
 
 ```
 clause-and-effect/
-├── manifest.json              # ✅ Extension configuration (complete)
-├── background.js              # 🚧 Service worker template (needs implementation)
-├── content.js                 # 🚧 Content script template (needs implementation)
-├── content.css                # 🚧 Panel styling (minimal placeholder)
-├── popup.html                 # ✅ Settings popup UI (complete)
-├── popup.js                   # 🚧 Settings logic (needs implementation)
-├── .env                       # ✅ API keys configured
-├── COPILOT_CONTEXT.md         # ✅ Technical specifications (725 lines)
-├── README.md                  # This file
-└── IMPLEMENTATION_PLAN.md     # 24-hour hackathon implementation guide
-```
-
-### Files to Create:
-
-```
-api/
-├── gemini.js                  # ❌ Gemini API wrapper (TO BE CREATED)
-└── backboard.js               # ❌ Backboard.io client (TO BE CREATED)
-
-utils/
-├── extractor.js               # ❌ Text extraction utilities (TO BE CREATED)
-├── analyzer.js                # ❌ Risk scoring logic (optional)
-└── highlighter.js             # ❌ Clause highlighting (optional)
+├── manifest.json          # Extension config (Manifest V3)
+├── popup.html             # Main UI — HTML + inline CSS
+├── popup.js               # UI logic, PDF upload, display results
+├── content.js             # Content script — extracts text from web pages
+├── background.js          # Service worker (onInstalled listener)
+├── config.js              # Your Gemini API key (gitignored)
+├── config.example.js      # Template — copy to config.js
+├── api/
+│   └── gemini.js          # Gemini API wrapper (temperature 0.3)
+├── utils/
+│   ├── analyzer.js        # Orchestrates prompt building + API call
+│   └── prompts.js         # Loads prompt templates from prompts/
+├── prompts/
+│   └── legal-analysis.txt # Detailed scoring rubric + output schema
+├── lib/
+│   ├── pdf.min.js         # PDF.js library
+│   └── pdf.worker.min.js  # PDF.js web worker
+├── media/
+│   └── logo.png           # Extension icon
+├── .gitignore
+└── README.md
 ```
 
 ---
 
-## Quick Start
+## Setup
 
-### 1. Get API Keys
+### Prerequisites
 
-**Gemini API (Required):**
-1. Visit [Google AI Studio](https://ai.google.dev/)
-2. Create a new API key
-3. Free tier: 1500 requests/day
-4. Already configured in `.env`
+- Google Chrome (or any Chromium-based browser)
+- A Gemini API key from [Google AI Studio](https://ai.google.dev/) (free tier: 1,500 requests/day)
 
-**Backboard.io API (Recommended for bonus points):**
-1. Visit [Backboard.io](https://backboard.io/)
-2. Sign up and get your API key
-3. Enables memory and comparative analysis features
-4. Already configured in `.env`
+### 1. Clone the Repository
 
-### 2. Load the Extension (Current State)
+```bash
+git clone https://github.com/<your-username>/clause-and-effect.git
+cd clause-and-effect
+```
 
-1. Clone this repository
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" (toggle in top right)
-4. Click "Load unpacked"
-5. Select the `clause-and-effect` folder
+### 2. Configure Your API Key
 
-**Current Behavior:** Extension loads successfully but does not yet analyze documents (core features not implemented).
+```bash
+cp config.example.js config.js
+```
 
-### 3. Implement Core Features
+Open `config.js` and replace the placeholder with your actual key:
 
-See **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)** for the complete 24-hour hackathon implementation guide with:
-- Step-by-step instructions
-- Code examples and templates
-- File-by-file breakdown
-- Testing procedures
-- Debugging tips
+```javascript
+const CONFIG = {
+  GEMINI_API_KEY: "YOUR_GEMINI_API_KEY_HERE",
+};
+```
 
----
+> `config.js` is gitignored and will never be committed.
 
-## Implementation Roadmap
+### 3. Load the Extension in Chrome
 
-### Priority 1: Core API Integration ⚡ CRITICAL
+1. Navigate to `chrome://extensions/`
+2. Enable **Developer mode** (toggle in the top right)
+3. Click **Load unpacked**
+4. Select the `clause-and-effect/` folder from your local machine
 
-1. **Create `api/gemini.js`** - Gemini API wrapper
-   - Implement `analyzeWithGemini(text)` function
-   - Use prompt template from COPILOT_CONTEXT.md
-   - Handle JSON response parsing
-
-2. **Create `api/backboard.js`** - Backboard.io client
-   - Implement `store()`, `query()`, `semanticSearch()` methods
-   - Enable memory/RAG features
-
-3. **Update `background.js`** - Service worker orchestration
-   - Import API wrappers
-   - Create context menu item
-   - Handle message passing
-
-### Priority 2: Text Extraction 📄
-
-4. **Create `utils/extractor.js`** - Text extraction
-   - `extractPageText()` - Clean web page HTML
-   - `getSelectedText()` - Capture user selections
-   - Handle large documents (>30k chars)
-
-5. **Update `content.js`** - Content script
-   - Trigger extraction on context menu click
-   - Send extracted text to background worker
-
-### Priority 3: UI Display 🎨
-
-6. **Update `content.css`** - Analysis panel styling
-   - Sliding panel layout (right side)
-   - Risk score gauge with color coding
-   - Red/yellow flag sections
-
-7. **Update `content.js`** - Panel injection
-   - Create DOM structure dynamically
-   - Populate with analysis results
-   - Add interactivity (close, copy, export)
-
-### Priority 4: Polish ✨
-
-8. **Update `popup.js`** - Settings functionality (optional)
-   - Save API keys to Chrome storage
-   - Display usage statistics
-
-9. **Testing** - End-to-end validation
-   - Test on multiple documents (TikTok, GitHub, Facebook TOS)
-   - Verify API integration
-   - Debug common issues
+The Clause & Effect icon will appear in your browser toolbar. Click it to open the popup and start analyzing legal documents!
 
 ---
 
-## How It Will Work (When Complete)
+## Usage
 
-1. User navigates to a legal document webpage
-2. User right-clicks → Selects "Simplify Legal Document"
-3. `content.js` extracts text from the page
-4. Text sent to `background.js` service worker
-5. `background.js` calls Gemini API for analysis
-6. Analysis stored in Backboard.io for memory
-7. Results sent back to `content.js`
-8. Sliding panel appears with risk score, flags, and advice
+### Analyze a Web Page
+
+1. Navigate to any websites legal document(Terms of Service, Privacy Policy, etc.)
+2. Click the **Clause & Effect** extension icon
+3. Click **Analyze Current Page**
+4. View the risk score, flags, summary, and negotiation advice
+
+### Analyze a PDF
+
+1. Click the extension icon
+2. Click **Upload PDF** and select a PDF file of your legal document
+3. Click **Analyze PDF**
+4. Results appear in the same format as web page analysis
+
+---
+
+## How It Works
+
+1. **Text Extraction** — The content script clones the page DOM, strips non-text elements (`script`, `style`, `noscript`, `iframe`, `svg`), and returns clean text. For PDFs, PDF.js extracts text client-side.
+2. **Prompt Construction** — The extracted text is inserted into the scoring rubric template (`prompts/legal-analysis.txt`).
+3. **AI Analysis** — The prompt is sent to Gemini with tuned parameters (`temperature: 0.3`, `topK: 20`, `topP: 0.85`) for consistent, reproducible scoring.
+4. **Display** — The popup parses the JSON response and renders the risk score, flag cards, summary, and advice.
 
 ---
 
 ## Risk Score Guide
 
-- **0-30 (Green)** - Consumer-friendly, low risk
-- **31-60 (Yellow)** - Standard terms, some concerns
-- **61-85 (Orange)** - Unfavorable, multiple red flags
-- **86-100 (Red)** - Predatory, dangerous terms
-
----
-
-## Testing Documents (When Ready)
-
-Test the extension on these documents (in order of complexity):
-
-1. **GitHub TOS** - Low risk (~25/100), developer-friendly
-2. **Spotify TOS** - Moderate risk (~45/100), standard consumer terms
-3. **TikTok TOS** - High risk (~87/100), extensive data collection
-4. **Facebook Privacy Policy** - High risk (~75/100), complex data usage
-
----
-
-## Development Resources
-
-- **[COPILOT_CONTEXT.md](COPILOT_CONTEXT.md)** - Comprehensive technical specifications (725 lines)
-  - Gemini prompt templates (lines 159-213)
-  - Gemini API implementation guide (lines 216-244)
-  - Backboard.io examples (lines 250-296)
-  - Text extraction strategies (lines 342-391)
-  - UI/UX design spec (lines 397-440)
-  - Error handling patterns (lines 443-488)
-
-- **[IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md)** - Step-by-step hackathon guide
-  - 7 prioritized implementation steps
-  - Time estimates (10-14 hours total)
-  - Code templates and examples
-  - Testing and debugging guide
+| Score  | Level    | Color  | Meaning                         |
+| ------ | -------- | ------ | ------------------------------- |
+| 0–20   | Minimal  | Green  | Very consumer-friendly          |
+| 21–40  | Low      | Green  | Generally fair terms            |
+| 41–60  | Moderate | Yellow | Some concerning clauses         |
+| 61–80  | High     | Orange | Multiple red flags, unfavorable |
+| 81–100 | Critical | Red    | Predatory or dangerous terms    |
 
 ---
 
 ## Debugging
 
-**View Console Logs:**
+### Extension Popup Console
 
-1. **Service Worker Logs:**
-   - Go to `chrome://extensions/`
-   - Find "Clause and Effect"
-   - Click "Inspect views: background page"
+1. Right-click the extension popup → **Inspect**
+2. Check the Console tab for prompt/response debug logs and to see the prompt and response from Gemini
 
-2. **Content Script Logs:**
-   - Open any webpage
-   - Right-click → Inspect → Console
+### Service Worker Logs
 
-**Common Issues:**
+1. Go to `chrome://extensions/`
+2. Find **Clause & Effect** → click **Inspect views: service worker**
 
-- **Extension not loading**: Check manifest.json syntax at jsonlint.com
-- **Context menu not appearing**: Verify `contextMenus` permission in manifest.json
-- **API calls fail**: Check API keys in `.env` file
-- **CORS errors**: Use background.js for API calls (not content.js)
-- **JSON parsing fails**: Gemini may wrap JSON in markdown code blocks
+### Content Script Logs
 
----
+1. Open any webpage → right-click → **Inspect** → Console
+2. Filter by `content script` messages
 
-## Security Notes
+### Common Issues
 
-⚠️ **Development/Hackathon Setup:**
-- API keys are stored in `.env` file
-- This is acceptable for hackathon/demo purposes
-- Do NOT commit `.env` to public repositories
-
-🔒 **For Production:**
-- Implement proper API key management
-- Use Chrome storage with encryption
-- Consider backend proxy for API calls
-- Add rate limiting and usage tracking
+| Problem                              | Fix                                                       |
+| ------------------------------------ | --------------------------------------------------------- |
+| Popup shows "API key not configured" | Ensure `config.js` exists and has a valid key             |
+| "Cannot analyze this page"           | Extension cannot run on `chrome://` or `edge://` URLs     |
+| Risk scores seem off                 | Check the console for the full prompt/response to debug   |
+| PDF upload not working               | Ensure `lib/pdf.min.js` and `lib/pdf.worker.min.js` exist |
+| API calls failing with 403 or 401    | Verify your Gemini API key and quota in Google AI Studio  |
 
 ---
 
-## Project Timeline
+## Security
 
-- **Day 0 (Current):** Foundation complete, core features ready for implementation
-- **Day 1:** API integration + text extraction + basic UI
-- **Day 2:** Polish, testing, demo preparation
-- **Demo Day:** Present working MVP at Hack_NCState2026
-
-**Estimated Implementation Time:** 10-14 hours (with buffer for debugging)
+- **API key** is stored in `config.js`, which is gitignored — never committed to version control
+- `config.example.js` is the safe template checked into Git
+- All API calls happen in the popup context (extension origin), not from content scripts
 
 ---
 
-## Contributing
-
-This is a hackathon project for Hack_NCState2026. Team members:
-- **Vihaan** - [Role/Focus]
-- **Aadhya** - [Role/Focus]
-- **Vedant** - [Role/Focus]
+**Event:** Hack_NCState2026
 
 ---
 
 ## License
 
-MIT License - See LICENSE file for details
+MIT License
 
 ---
 
-## Acknowledgments
-
-- Google Gemini API for AI-powered analysis
-- Backboard.io for memory and RAG capabilities
-- Chrome Extensions documentation and community
-- All the legal documents we never actually read... until now!
-
----
-
-**Team:** Vihaan, Aadhya, Vedant
-**Event:** Hack_NCState2026
-**Status:** 🚧 Foundation Complete - Implementation In Progress
-**Built with:** ☕ Coffee, 💻 Code, and ⚖️ Justice
+To all the legal documents we blindly accepted... until now.
