@@ -100,7 +100,7 @@ const CONFIG = {
 };
 ```
 
-> `config.js` is gitignored and will never be committed.
+> Note: `config.js` is gitignored.
 
 ### 3. Load the Extension in Chrome
 
@@ -142,7 +142,7 @@ The Clause & Effect icon will appear in your browser toolbar. Click it to open t
 
 ## Risk Score Guide
 
-**Lower is better.** A score of 0 means the document is very consumer-friendly; a score of 100 means it contains predatory or dangerous terms.
+**Lower is better.** A score of 0 means the document is very consumer-friendly; a score of 100 means it contains extremely predatory or dangerous terms.
 
 | Score  | Level    | Color  | Meaning                         |
 | ------ | -------- | ------ | ------------------------------- |
