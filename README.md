@@ -18,6 +18,8 @@ Clause & Effect is a Chrome extension that analyzes legal documents — Terms of
 
 Never unknowingly sign away your rights again.
 
+Pitch Deck and Video Demo: https://www.canva.com/design/DAHBT6unuco/G2ne2IxtBSAlU8vCnwGIcQ/view?utm_content=DAHBT6unuco&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha444c71cc4
+
 ---
 
 ## Features
